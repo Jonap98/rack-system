@@ -1,6 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\SensoresController;
+use App\Http\Controllers\RacksController;
+use App\Http\Controllers\rack\RequerimientosRackController;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,6 +16,17 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+
+Route::get('/', [SensoresController::class, 'index'])->name('sensores');
+
+// Sensores
+Route::get('sensores', [SensoresController::class, 'index'])->name('sensores');
+Route::post('sensores/store', [SensoresController::class, 'store'])->name('sensores.store');
+
+// Racks
+Route::get('racks', [RacksController::class, 'index'])->name('racks');
+Route::post('racks/store', [RacksController::class, 'store'])->name('racks.store');
+
+// Requerimientos
+Route::get('requerimientos', [RequerimientosRackController::class, 'index'])->name('requerimientos');
+Route::post('requerimientos/store', [RequerimientosRackController::class, 'store'])->name('requerimientos.store');
