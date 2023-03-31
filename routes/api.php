@@ -25,9 +25,16 @@ Route::group([
 ], function($router) {
     // Sensores
     Route::post('sensores/store', [SensoresController::class, 'store'])->name('sensores.store');
+    // Get part number
+    Route::get('sensores/getpart/{sensor}', [SensoresController::class, 'getPart'])->name('racks.getPart');
     // Racks
     Route::post('racks/store', [RacksController::class, 'store'])->name('racks.store');
     Route::post('racks/update/', [RacksController::class, 'update'])->name('racks.update');
+
+    // GetApi test
+    Route::get('racks/get', [RacksController::class, 'getApi'])->name('racks.get');
+    Route::get('racks/upd/{num_parte}/{sensor_min}/{sensor_max}', [RacksController::class, 'updateGet'])->name('racks.updateget');
+    
 });
 
 

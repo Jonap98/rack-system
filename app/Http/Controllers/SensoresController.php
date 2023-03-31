@@ -30,4 +30,16 @@ class SensoresController extends Controller
 
         return back()->with('success', 'El sensor fue registrado exitosamente');
     }
+
+    public function getPart(String $sensor) {
+        $data = SensoresModel::select(
+            'num_parte',
+        )
+        ->where('sensor', $sensor)
+        ->first();
+
+        return response([
+            'sensor' => $data->num_parte
+        ]);
+    }
 }
