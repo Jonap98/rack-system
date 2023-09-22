@@ -39,7 +39,7 @@ class SensoresController extends Controller
         ->first();
 
         return response([
-            'sensor' => $data->num_parte
+            'num_parte' => $data->num_parte
         ]);
     }
 }

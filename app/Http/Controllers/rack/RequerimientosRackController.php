@@ -37,6 +37,41 @@ class RequerimientosRackController extends Controller
     }
 
     public function store(Request $request) {
+        
+
+        // Simulación del for en el front
+        for ($i=0; $i < 5; $i++) { 
+            // Seleccionar el registro con el mismo folio que el del request
+            // en donde el comentario sea 'rack'
+            // Si ese registro existe, no hacer nada
+            // Insertar registro si no existe
+
+            // Este es la simulación del $request->folio
+        $folioRequest = DB::connection('sqlsrv')
+        ->table('Rack_requerimientos')
+        ->select(
+            'folio'
+        )
+        ->orderBy('id', 'desc')
+        ->first();
+
+        $folioDuplicado = RequerimientosModel::select(
+            'id',
+            'folio'
+            // '*'
+        )
+        // ->where('folio', $request->folio)
+        ->where('folio', $folioRequest->folio)
+        // ->where('comentarios', '!=', null)
+        // ->where('comentarios', '!=', '')
+        ->where('comentarios', 'rack')
+        ->first();
+
+        if(!$folioDuplicado) {
+
+        
+
+
         // 1- Obtiene todos los registros de los racks
         $racks = RacksModel::select(
             'num_parte',
@@ -50,6 +85,9 @@ class RequerimientosRackController extends Controller
 
         // 2- Para cada uno de los números en los racks, verifica si están en el programa de producción
         foreach ($racks as $rack) {
+            // return response([
+            //     'data' => $rack
+            // ]);
             $complete_join = DB::connection('sqlsrv')
                 ->table('PFEP_supply as pfep')
                 ->leftJoin('V_Scheduled_Material as scheduled', 'scheduled.Parte', '=', 'pfep.part_number')
@@ -70,6 +108,10 @@ class RequerimientosRackController extends Controller
                 ->distinct()
                 ->get();
 
+                // return response([
+                //     'join' => $complete_join
+                // ]);
+
             // $complete_join->another_property = 'Holis';
             if(count($complete_join) > 0) {
                 array_push($list, $complete_join);
@@ -82,39 +124,53 @@ class RequerimientosRackController extends Controller
 
         // 3- Calcular la cantidad que se va a pedir de cada material
         foreach ($list as $list_in_prod) {
-            // Caso 1: Stock menor del mínimo
-            // sensor_min = 0 y sensor_max = 0
+            // Caso 1: No stock
             if($list_in_prod[0]->sensor_min == 0 && $list_in_prod[0]->sensor_max == 0) {
-                $list_in_prod[0]->cantidad = $list_in_prod[0]->max_units_per_rack -1;
-                // $list_in_prod[0]->cantidad = 'Stock menor del mínimo';
-            }
-
-            // Caso 2: Stock mínimo
-            // sensor_min = 0 y sensor_max = 0
-            if($list_in_prod[0]->sensor_min == 1 && $list_in_prod[0]->sensor_max == 0) {
                 $list_in_prod[0]->cantidad = $list_in_prod[0]->min_units_per_rack;
-                // $list_in_prod[0]->cantidad = 'Stock mínimo';
             }
 
-            // Caso 3: Stock completo, no solicitar material
-            // sensor_min = 0 y sensor_max = 1
+            // Caso 2: Stock
+            if($list_in_prod[0]->sensor_min == 0 && $list_in_prod[0]->sensor_max == 1) {
+                $list_in_prod[0]->cantidad = 0;
+            }
+
+            // Caso 3: No existe, error, falla sensor
             if($list_in_prod[0]->sensor_min == 1 && $list_in_prod[0]->sensor_max == 1) {
                 $list_in_prod[0]->cantidad = 0;
-                // $list_in_prod[0]->cantidad = $list_in_prod[0]->min_units_per_rack;
-                // $list_in_prod[0]->cantidad = 'Stock full';
             }
             
 
-            // Caso 4: No existe, error del sensor o del rack
-            // sensor_min = 0 y sensor_max = 1
-            if($list_in_prod[0]->sensor_min == 0 && $list_in_prod[0]->sensor_max == 1) {
-                $list_in_prod[0]->cantidad = 0;
-                // $list_in_prod[0]->cantidad = 'NA';
-            }
                
         }
 
+        // Obtiene el último folio
+        $folio = 0;
+        
+        $ultimoFolio = DB::connection('sqlsrv')
+        ->table('Requerimientos')
+        ->select(
+            'folio'
+        )
+        ->orderBy('id', 'desc')
+        ->first();
+
+        // $ultimoFolio = RequerimientosModel::select(
+        //     'folio'
+        // )
+        // ->orderBy('id', 'desc')
+        // ->first();
+
+        $folio = $ultimoFolio->folio + 1;
+
+        // return response([
+        //     'data' => $folio,
+        //     'ultimo' => $ultimoFolio
+        // ]);
+
         // Crear solicitud de material
+        // return response([
+        //     'list' => $list
+        // ]);
         foreach ($list as $lt) {
             $info = PartInformationModel::select(
                 'PART_DESCRIPTION as descripcion',
@@ -132,7 +188,7 @@ class RequerimientosRackController extends Controller
 
                 $requerimiento = RequerimientosModel::create([
                     'requerimientoGuid' => Str::uuid(),
-                    'folio' => 1,
+                    'folio' => $folio,
                     'tipo_requerimiento' => 'e-kanban',
                     'parte' => $lt[0]->part_number,
                     // 'area' => $request->area, // PFEP_supply - delivery_location
@@ -154,12 +210,18 @@ class RequerimientosRackController extends Controller
                     'folioCreado' => '',
                     'criticoCreado' => '',
                     'enTransitoCreado' => '',
-                    'comentarios' => '',
+                    'comentarios' => 'rack',
                 ]);
+            } else {
+                // return response([
+                //     'no data' => $lt
+                // ]);
             }
         }
+    }
+    
 
+    }
         return back()->with('success', 'Requerimiento solicitado exitosamente');
-
     }
 }

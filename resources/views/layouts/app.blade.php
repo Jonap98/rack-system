@@ -42,6 +42,9 @@
                     <li class="nav-item">
                         <a class="nav-link active" aria-current="page" href="{{ route('requerimientos') }}">Requerimientos</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="{{ route('nuevosrequerimientos') }}">Nuevos Requerimientos</a>
+                    </li>
                 </ul>
                 
             </div>

@@ -12,7 +12,8 @@
                     <h5>Requerimientos</h5>
                     <form action="{{ route('requerimientos.store') }}" method="POST">
                         @csrf
-                        <input type="hidden" id="ruta" name="ruta" value="3Z">
+                        <input type="hidden" id="ruta" name="ruta" value="1J">
+                        {{-- <input type="hidden" id="ruta" name="ruta" value="3Z"> --}}
                         <button type="submit" class="btn btn-primary">
                             Solicitar material
                         </button>

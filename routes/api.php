@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SensoresController;
 use App\Http\Controllers\RacksController;
+use App\Http\Controllers\NuevosRequerimientosController;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,6 +35,10 @@ Route::group([
     // GetApi test
     Route::get('racks/get', [RacksController::class, 'getApi'])->name('racks.get');
     Route::get('racks/upd/{num_parte}/{sensor_min}/{sensor_max}', [RacksController::class, 'updateGet'])->name('racks.updateget');
+
+    // Get rack info
+    Route::get('get/rack-info-api', [NuevosRequerimientosController::class, 'getRackInfo'])->name('get.rack-info-api');
+
     
 });
 

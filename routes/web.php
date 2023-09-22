@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SensoresController;
 use App\Http\Controllers\RacksController;
 use App\Http\Controllers\rack\RequerimientosRackController;
+use App\Http\Controllers\NuevosRequerimientosController;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,3 +31,11 @@ Route::post('racks/store', [RacksController::class, 'store'])->name('racks.store
 // Requerimientos
 Route::get('requerimientos', [RequerimientosRackController::class, 'index'])->name('requerimientos');
 Route::post('requerimientos/store', [RequerimientosRackController::class, 'store'])->name('requerimientos.store');
+
+
+// Nuevos requerimientos
+Route::get('nuevosrequerimientos', [NuevosRequerimientosController::class, 'index'])->name('nuevosrequerimientos');
+Route::get('get/rack-info', [NuevosRequerimientosController::class, 'getRackInfo'])->name('get.rack-info');
+
+
+

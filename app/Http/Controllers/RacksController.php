@@ -63,15 +63,18 @@ class RacksController extends Controller
 
     public function updateGet(String $num_parte, String $sensor_min, String $sensor_max) {
 
-        $rack = RacksModel::where('num_parte', $num_parte)->update([
+        RacksModel::where('num_parte', $num_parte)->update([
             'sensor_min' => $sensor_min,
             'sensor_max' => $sensor_max
         ]);
 
-       return response([
-        'msg' => 'Rack actualizado exitosamente',
-        'data' => $rack
-       ]);
+        return response([
+            'num_part' => $num_parte,
+            'min' => $sensor_min,
+            'max' => $sensor_max,
+            'msg' => 'Rack actualizado exitosamente',
+            // 'data' => $rack
+        ]);
 
     }
 }
